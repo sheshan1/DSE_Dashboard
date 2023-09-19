@@ -3,12 +3,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { FiSettings } from 'react-icons/fi';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 
-
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-
-
 import { Navbar, Footer, Sidebar, ThemeSettings } from './components';
-import { Ecommerce, Orders, Calendar, Employees, Stacked, Pyramid, Customers, Kanban, Line, Area, Bar, Pie, Financial, ColorPicker, ColorMapping, Editor } from './pages';
+import { Ecommerce, Orders, Calendar, Employees, Stacked, Pyramid, Customers, Kanban, Line, Area, Bar, Pie, Financial, ColorPicker, ColorMapping, Editor, OpenMap } from './pages';
 import './App.css';
 
 import { useStateContext } from './contexts/ContextProvider';
@@ -24,25 +20,6 @@ const App = () => {
       setCurrentMode(currentThemeMode);
     }
   }, []);
-
-  const OpenStreetMap = () => {
-    const position = [51.505, -0.09]; // Initial coordinates
-  
-    return (
-      <MapContainer center={position} zoom={13} style={{ height: '400px', width: '100%' }}>
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-        <Marker position={position}>
-          <Popup>
-            A pretty CSS3 popup. <br /> Easily customizable.
-          </Popup>
-        </Marker>
-      </MapContainer>
-    );
-  };
-  
 
   return (
     <div className={currentMode === 'Dark' ? 'dark' : ''}>
@@ -99,10 +76,9 @@ const App = () => {
                 {/* apps  */}
                 <Route path="/kanban" element={<Kanban />} />
                 <Route path="/editor" element={<Editor />} />
+                <Route path="/openmap" element={<OpenMap />} />
                 <Route path="/calendar" element={<Calendar />} />
                 <Route path="/color-picker" element={<ColorPicker />} />
-
-                <Route path="/map" element={<OpenStreetMap />} />
 
                 {/* charts  */}
                 <Route path="/line" element={<Line />} />
