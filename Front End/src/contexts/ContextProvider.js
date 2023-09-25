@@ -6,7 +6,7 @@ const initialState = {
   chat: false,
   // cart: false,
   userProfile: false,
-  notification: false,
+  // notification: false,
 };
 
 export const ContextProvider = ({ children }) => {
