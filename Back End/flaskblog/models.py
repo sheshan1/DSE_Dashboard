@@ -26,16 +26,42 @@ class BusStop(db.Model):
 
     bus_stop_schema = BusStopSchema()
     bus_stops_schema = BusStopSchema(many=True)
-    # def __repr__(self):
-    #     return f"BusStop('{self.stop_id}', '{self.route_id}', '{self.direction}', '{self.address}', '{self.latitude}', '{self.longitude}')"
 
+class BusDataSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'deviceid', 'latitude', 'longitude', 'speed', 'date', 'time', 'geometry', 'bus_stop', 'trip_id', 'direction', 'acceleration', 'radial_acceleration', 'distance')
 
+class BusData(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    deviceid = db.Column(db.String(255))
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+    speed = db.Column(db.Float)
+    date = db.Column(db.Date)
+    time = db.Column(db.Time)
+    geometry = db.Column(db.String(255))
+    bus_stop = db.Column(db.String(255))
+    trip_id = db.Column(db.Integer)
+    direction = db.Column(db.String(255))
+    acceleration = db.Column(db.Float)
+    radial_acceleration = db.Column(db.Float)
+    distance = db.Column(db.Float)
 
+    def __init__(self, deviceid, latitude, longitude, speed, date, time, geometry, bus_stop, trip_id, direction, acceleration, radial_acceleration, distance):
+        self.deviceid = deviceid
+        self.latitude = latitude
+        self.longitude = longitude
+        self.speed = speed
+        self.date = date
+        self.time = time
+        self.geometry = geometry
+        self.bus_stop = bus_stop
+        self.trip_id = trip_id
+        self.direction = direction
+        self.acceleration = acceleration
+        self.radial_acceleration = radial_acceleration
+        self.distance = distance
 
-
-# @routes.route("./", methods=['GET'])
-# def get_busstops():
-#     all_bus_stops = BusStop.query.all()
-#     result = BusStop.bus_stops_schema.dump(all_bus_stops)
-#     return jsonify(result)
+    bus_data_schema = BusDataSchema()
+    bus_datas_schema = BusDataSchema(many=True)
 
