@@ -16,8 +16,12 @@ def create_app(config_class=config):
     db.init_app(app)
     ma.init_app(app)
 
-    with app.app_context():
-        from flaskblog import models  # Importing models here to avoid circular imports
-        db.create_all()
+    # with app.app_context():
+    #     from flaskblog import models  # Importing models here to avoid circular imports
+    #     db.create_all()
+
+    from flaskblog.routes.busStopRoutes import routes
+
+    app.register_blueprint(routes)
 
     return app
