@@ -34,7 +34,8 @@ export default function DropDown({ onSelect }) {
           label="busId *"
           onChange={handleChange}
         >
-          {deviceIds.map((deviceId) => (
+          <MenuItem value="">None</MenuItem>
+          {deviceIds && deviceIds.map((deviceId) => (
             <MenuItem key={deviceId} value={deviceId}>
               {deviceId}
             </MenuItem>

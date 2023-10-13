@@ -1,41 +1,54 @@
 from flask import Blueprint, jsonify
 from flaskblog.models import BusStop, BusData
-# from flask_apscheduler import APScheduler
 import time
+from datetime import datetime, timedelta
+import threading
 
 routes = Blueprint('routes', __name__)
 
 last_id = 0  # Initialize with 0
 
-@routes.route('/get_data/<int:deviceid>', methods=['GET', 'POST'])
-def get_data(deviceid):
-    global last_id
+# Create a dictionary to store data by device_id
+stored_data = {}
+
+current_date = '2021-10-18'
+current_time = '09:02:14'
+
+def start_clock():
+    global current_date, current_time
 
     while True:
-        data = BusData.query.filter(BusData.id > last_id, BusData.deviceid == deviceid).first()
+        current_time = (datetime.strptime(current_time, '%H:%M:%S') + timedelta(seconds=1)).strftime('%H:%M:%S')
+        if current_time == '00:00:00':
+            current_date = (datetime.strptime(current_date, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
+            current_time = '00:00:01'
+        time.sleep(1)
 
-        if data:
-            data_dict = {
-                'id': data.id,
-                'deviceid': data.deviceid,
-                'latitude': data.latitude,
-                'longitude': data.longitude,
-                'speed': data.speed,
-                'date': data.date,
-                'time': str(data.time),
-                'geometry': data.geometry,
-                'bus_stop': data.bus_stop,
-                'trip_id': data.trip_id,
-                'direction': data.direction,
-                'acceleration': data.acceleration,
-                'radial_acceleration': data.radial_acceleration,
-                'distance': data.distance,
-            }
+clock_thread = threading.Thread(target=start_clock)
+clock_thread.start()
 
-            last_id = data.id
-            return jsonify(data=data_dict)
+@routes.route('/get_matching_data', methods=['GET'])
+def get_matching_data():
+    global stored_data
 
-        time.sleep(3)
+    data_list = BusData.query.filter(
+        BusData.date == current_date,
+        BusData.time == current_time
+    ).all()
+    result = BusData.bus_datas_schema.dump(data_list)
+
+    for data in result:
+        stored_data[data['deviceid']] = data
+
+    # Convert the dictionary to a list of values
+    unique_data = list(stored_data.values())
+
+    return jsonify(unique_data)
+
+@routes.route('/get_data/<string:deviceid>', methods=['GET', 'POST'])
+def get_data(deviceid):
+    global stored_data
+    return jsonify(stored_data[deviceid])
 
 @routes.route("/map", methods=['GET'])
 def get_busstops():
@@ -43,13 +56,8 @@ def get_busstops():
     result = BusStop.bus_stops_schema.dump(all_bus_stops)
     return jsonify(result)
 
-# @routes.route("/map/<int:bus_stop_id>", methods=['GET'])
-# def get_busstop(bus_stop_id):
-#     bus_stop = BusStop.query.get(bus_stop_id)
-#     return BusStop.bus_stop_schema.jsonify(bus_stop)
-
 @routes.route('/get_deviceids', methods=['GET'])
 def get_deviceids():
-    deviceids = BusData.query.with_entities(BusData.deviceid).distinct().all()
-    unique_deviceids = [result[0] for result in deviceids]
+    global stored_data
+    unique_deviceids = sorted(list(stored_data.keys()))
     return jsonify(unique_deviceids)

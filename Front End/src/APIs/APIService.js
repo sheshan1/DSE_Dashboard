@@ -22,4 +22,12 @@ export default class APIService {
     })
       .then((resp) => resp.json());
   }
+
+  static getAllBusData() {
+    return fetch('http://127.0.0.1:5000/get_matching_data', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((resp) => resp.json());
+  }
 }
