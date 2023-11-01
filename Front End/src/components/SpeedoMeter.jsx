@@ -14,11 +14,11 @@ export default function SpeedoMeter({ speed }) {
         maxSegmentLabels={6}
         segments={10}
         endColor="red"
-        width={500}
+        width={400}
         labelFontSize={13}
         valueTextFontSize={20}
         valueTextFontWeight={350}
-        needleTransition="easeBounceInOut"
+        needleTransition="easeBounceInOutcd "
         paddingHorizontal={15}
         paddingVertical={15}
         needleTransitionDuration={3000}

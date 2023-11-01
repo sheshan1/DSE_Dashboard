@@ -8,7 +8,7 @@ app = create_app()
 with app.app_context():
     db.create_all()
 
-    file_path = r'D:/Downloads/Project/Final/df_for_running_time_model_updated.csv'
+    file_path = r'D:/Downloads/Project/Final/runningTime.csv'
 
     with open(file_path, 'r') as file:
         csv_reader = csv.DictReader(file)
@@ -17,7 +17,6 @@ with app.app_context():
             deviceid = int(row['deviceid'])
             direction = int(row['direction'])
             segment = int(row['segment'])
-            run_time_in_seconds = int(row['run_time_in_seconds'])
             length = float(row['length'])
             day_of_week = int(row['day_of_week'])
             time_of_day = float(row['time_of_day'])
@@ -71,7 +70,6 @@ with app.app_context():
                 deviceid=deviceid,
                 direction=direction,
                 segment=segment,
-                run_time_in_seconds=run_time_in_seconds,
                 length=length,
                 day_of_week=day_of_week,
                 time_of_day=time_of_day,

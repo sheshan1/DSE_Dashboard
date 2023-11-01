@@ -1,4 +1,5 @@
 export { default as Ecommerce } from './Ecommerce';
+export { default as Analysis } from './Analysis';
 export { default as OpenSMap } from './OpenSMap';
 export { default as Area } from './Charts/Area';
 export { default as Bar } from './Charts/Bar';

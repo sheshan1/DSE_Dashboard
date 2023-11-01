@@ -8,7 +8,7 @@ app = create_app()
 with app.app_context():
     db.create_all()
 
-    file_path = r'D:/Downloads/Project/Final/df_for_dwelltime_model_updated.csv'
+    file_path = r'D:/Downloads/Project/Final/dwellTime.csv'
 
     with open(file_path, 'r') as file:
         csv_reader = csv.DictReader(file)
@@ -17,7 +17,6 @@ with app.app_context():
             deviceid = int(row['deviceid'])
             direction = int(row['direction'])
             bus_stop = int(row['bus_stop'])
-            dwell_time_in_seconds = int(row['dwell_time_in_seconds'])
             day_of_week = int(row['day_of_week'])
             time_of_day = float(row['time_of_day'])
             Sunday_holiday = int(row['Sunday/holiday'])
@@ -50,7 +49,6 @@ with app.app_context():
                 deviceid=deviceid,
                 direction=direction,
                 bus_stop=bus_stop,
-                dwell_time_in_seconds=dwell_time_in_seconds,
                 day_of_week=day_of_week,
                 time_of_day=time_of_day,
                 Sunday_holiday=Sunday_holiday,

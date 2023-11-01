@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify
-from flaskblog.models import BusStop, BusData, DwellTime, RunningTime
+from flaskblog.models import BusStop, Combined
 import time
 from datetime import datetime, timedelta
 import threading
-import joblib
+from sqlalchemy import func
 
 routes = Blueprint('routes', __name__)
 
@@ -11,12 +11,10 @@ last_id = 0  # Initialize with 0
 
 # Create a dictionary to store data by device_id
 stored_data = {}
+stop_data = {}
 
-current_date = '2021-10-18'
-current_time = '09:02:14'
-
-dwelltime_model = joblib.load('flaskblog/models/dwelltime_model.sav')
-runningtime_model = joblib.load('flaskblog/models/running_time_model.sav')
+current_date = '2022-10-13'
+current_time = '07:26:00'
 
 def start_clock():
     global current_date, current_time
@@ -31,36 +29,26 @@ def start_clock():
 clock_thread = threading.Thread(target=start_clock)
 clock_thread.start()
 
+@routes.route('/get_currentTime', methods=['GET'])
+def get_currentTime():
+    global current_time
+    return jsonify({'current_time': current_time})
+
 @routes.route('/get_matching_data', methods=['GET'])
 def get_matching_data():
     global stored_data
 
-    data_list = BusData.query.filter(
-        BusData.date == current_date,
-        BusData.time == current_time
+    data_list = Combined.query.filter(
+        Combined.date == current_date,
+        Combined.time == current_time
     ).all()
-    result = BusData.bus_datas_schema.dump(data_list)
+    result = Combined.bus_datas_schema.dump(data_list)
 
     for data in result:
         stored_data[data['deviceid']] = data
 
     # Convert the dictionary to a list of values
     unique_data = list(stored_data.values())
-
-    for data in unique_data:
-        if data['bus_stop'] != 0:  # Check if the bus is at a bus stop
-            # Get the relevant features for prediction (e.g., feature1, feature2, ...)
-            features = [data['feature1'], data['feature2'], ...]
-
-            # Predict dwell time
-            dwell_time_prediction = dwelltime_model.predict([features])
-
-            # Predict running time
-            running_time_prediction = runningtime_model.predict([features])
-
-            # Add the predictions to the data
-            data['dwell_time_prediction'] = dwell_time_prediction[0]  # Assuming single prediction
-            data['running_time_prediction'] = running_time_prediction[0]  # Assuming single prediction
 
     return jsonify(unique_data)
 
@@ -81,16 +69,43 @@ def get_deviceids():
     unique_deviceids = sorted(list(stored_data.keys()))
     return jsonify(unique_deviceids)
 
-@routes.route('/get_dwelltime/<string:deviceid>', methods=['GET'])
-def get_dwelltime(deviceid):
-    global stored_data, dwelltime_model
-    data = stored_data[deviceid]
-    data['dwelltime'] = dwelltime_model.predict([[data['distance'], data['speed']]])[0]
-    return jsonify(data)
+@routes.route('/get_normCluster/<string:deviceid>', methods=['GET', 'POST'])
+def get_normCluster(deviceid):
+    global stored_data
 
-@routes.route('/get_runningtime/<string:deviceid>', methods=['GET'])
-def get_runningtime(deviceid):
-    global stored_data, runningtime_model
-    data = stored_data[deviceid]
-    data['runningtime'] = runningtime_model.predict([[data['distance'], data['speed']]])[0]
-    return jsonify(data)
+    trip_id = stored_data[deviceid]['trip_id']
+    segment = stored_data[deviceid]['segment']
+    data = Combined.query.with_entities(Combined.segment, Combined.norm_cluster).filter(
+        Combined.trip_id == trip_id,
+        Combined.segment <= segment,
+        Combined.norm_cluster >= 0
+    ).order_by(Combined.segment.asc()).distinct().all()
+    result = Combined.bus_datas_schema.dump(data)
+    return jsonify(result)
+
+@routes.route('/get_busstop/<string:deviceid>', methods=['GET', 'POST'])
+def get_busstop(deviceid):
+    global stored_data
+    global stop_data
+
+    segment = stored_data[deviceid]['segment']
+    if segment > 0 and segment < 15:
+        bus_stop = BusStop.query.filter_by(stop_id=str(segment+100)).first()
+        stop_data[deviceid] = bus_stop.address
+    elif segment == 15:
+        bus_stop = 'Digana'
+        stop_data[deviceid] = bus_stop
+    else:
+        if deviceid not in stop_data:
+            return jsonify({'bus_stop': 'Next'})
+    return jsonify({'bus_stop': stop_data[deviceid]})
+    
+@routes.route('/get_avgSpeed', methods=['GET'])
+def get_avgSpeed():
+    # calculate avg speed foe each segment and round to near 3 floating places
+    avg_speed = Combined.query.with_entities(Combined.segment, func.round(func.avg(Combined.speed), 3).label('avg_speed')).group_by(Combined.segment).order_by(Combined.segment.asc()).all()
+    # convert to list of dictionaries
+    result = []
+    for speed in avg_speed:
+        result.append({'segment': speed[0], 'avg_speed': speed[1]})
+    return jsonify(result)

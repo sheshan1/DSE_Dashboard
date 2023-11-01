@@ -9,7 +9,7 @@ with app.app_context():
     db.create_all()
 
     # Use raw string or forward slashes in the file path
-    file_path = r'D:/Downloads/Project/Final/bus_Data_updated.csv'
+    file_path = r'D:/Downloads/Project/Final/busData.csv'
 
     # Read data from CSV and insert into database
     with open(file_path, 'r') as file:
@@ -32,7 +32,6 @@ with app.app_context():
             distance = float(row['distance_from_start'])
             segment = int(row['segment'])
             
-
             bus_data = BusData(
                 deviceid=deviceid,
                 latitude=latitude,

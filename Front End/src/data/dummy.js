@@ -1,13 +1,10 @@
 import React from 'react';
-import { AiOutlineAreaChart, AiOutlineBarChart, AiOutlineStock } from 'react-icons/ai';
-import { FiPieChart, FiBarChart, FiCreditCard, FiStar, FiShoppingCart } from 'react-icons/fi';
-import { BsBarChart, BsBoxSeam, BsCurrencyDollar, BsShield } from 'react-icons/bs';
+import { FiBarChart, FiCreditCard, FiStar, FiShoppingCart } from 'react-icons/fi';
+import { BsBoxSeam, BsCurrencyDollar, BsShield } from 'react-icons/bs';
 import { FaMapMarkedAlt } from 'react-icons/fa';
-import { RiStockLine } from 'react-icons/ri';
-import { MdOutlineSupervisorAccount } from 'react-icons/md';
+import { MdOutlineSupervisorAccount, MdInsights } from 'react-icons/md';
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { TiTick } from 'react-icons/ti';
-import { GiLouvrePyramid } from 'react-icons/gi';
 import avatar from './avatar.jpg';
 import avatar2 from './avatar2.jpg';
 import avatar3 from './avatar3.png';
@@ -276,43 +273,9 @@ export const links = [
         name: 'map',
         icon: <FaMapMarkedAlt />,
       },
-    ],
-  },
-  {
-    title: 'Charts',
-    links: [
       {
-        name: 'line',
-        icon: <AiOutlineStock />,
-      },
-      {
-        name: 'area',
-        icon: <AiOutlineAreaChart />,
-      },
-
-      {
-        name: 'bar',
-        icon: <AiOutlineBarChart />,
-      },
-      {
-        name: 'pie',
-        icon: <FiPieChart />,
-      },
-      {
-        name: 'financial',
-        icon: <RiStockLine />,
-      },
-      {
-        name: 'color-mapping',
-        icon: <BsBarChart />,
-      },
-      {
-        name: 'pyramid',
-        icon: <GiLouvrePyramid />,
-      },
-      {
-        name: 'stacked',
-        icon: <AiOutlineBarChart />,
+        name: 'analysis',
+        icon: <MdInsights />,
       },
     ],
   },
@@ -1325,14 +1288,28 @@ export const scheduleData = [
 
 export const lineChartData = [
   [
-    { x: new Date(2005, 0, 1), y: 21 },
-    { x: new Date(2006, 0, 1), y: 24 },
-    { x: new Date(2007, 0, 1), y: 36 },
-    { x: new Date(2008, 0, 1), y: 38 },
-    { x: new Date(2009, 0, 1), y: 54 },
-    { x: new Date(2010, 0, 1), y: 57 },
-    { x: new Date(2011, 0, 1), y: 70 },
+    {
+      norm_cluster: 0,
+      segment: 0,
+    },
+    {
+      norm_cluster: 3,
+      segment: 4,
+    },
+    {
+      norm_cluster: 1,
+      segment: 1,
+    },
+    {
+      norm_cluster: 2,
+      segment: 2,
+    },
+    {
+      norm_cluster: 3,
+      segment: 3,
+    },
   ],
+
   [
     { x: new Date(2005, 0, 1), y: 28 },
     { x: new Date(2006, 0, 1), y: 44 },
@@ -1377,28 +1354,28 @@ export const SparklineAreaData = [
 
 export const lineCustomSeries = [
   { dataSource: lineChartData[0],
-    xName: 'x',
-    yName: 'y',
+    xName: 'segment',
+    yName: 'norm_cluster',
     name: 'Germany',
     width: '2',
     marker: { visible: true, width: 10, height: 10 },
     type: 'Line' },
 
-  { dataSource: lineChartData[1],
-    xName: 'x',
-    yName: 'y',
-    name: 'England',
-    width: '2',
-    marker: { visible: true, width: 10, height: 10 },
-    type: 'Line' },
+  // { dataSource: lineChartData[1],
+  //   xName: 'x',
+  //   yName: 'y',
+  //   name: 'England',
+  //   width: '2',
+  //   marker: { visible: true, width: 10, height: 10 },
+  //   type: 'Line' },
 
-  { dataSource: lineChartData[2],
-    xName: 'x',
-    yName: 'y',
-    name: 'India',
-    width: '2',
-    marker: { visible: true, width: 10, height: 10 },
-    type: 'Line' },
+  // { dataSource: lineChartData[2],
+  //   xName: 'x',
+  //   yName: 'y',
+  //   name: 'India',
+  //   width: '2',
+  //   marker: { visible: true, width: 10, height: 10 },
+  //   type: 'Line' },
 
 ];
 
